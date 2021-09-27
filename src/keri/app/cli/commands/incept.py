@@ -25,6 +25,9 @@ parser.add_argument('--name', '-n', help='Human readable reference', required=Tr
 parser.add_argument('--file', '-f', help='Filename to use to create the identifier', default="", required=True)
 parser.add_argument('--proto', '-p', help='Protocol to use when propagating ICP to witnesses [tcp|http] (defaults '
                                           'http)', default="http")
+parser.add_argument("--establishment-only", '-e',
+                    action='store_true',
+                    help="Run admin HTTP server without checking signatures on controlling requests")
 
 
 @dataclass
@@ -52,9 +55,10 @@ def handler(args):
         sys.exit(-1)
 
     name = args.name
+    estOnly = args.establishment_only
 
     kwa = opts.__dict__
-    icpDoer = InceptDoer(name=name, proto=args.proto, **kwa)
+    icpDoer = InceptDoer(name=name, proto=args.proto, estOnly=estOnly, **kwa)
 
     doers = [icpDoer]
     directing.runController(doers=doers, expire=0.0)
@@ -63,7 +67,7 @@ def handler(args):
 
 class InceptDoer(doing.DoDoer):
 
-    def __init__(self, name, proto, **kwa):
+    def __init__(self, name, proto, estOnly=False, **kwa):
 
         ks = keeping.Keeper(name=name, temp=False)  # not opened by default, doer opens
         self.ksDoer = keeping.KeeperDoer(keeper=ks)  # doer do reopens if not opened and closes
@@ -71,7 +75,7 @@ class InceptDoer(doing.DoDoer):
         self.dbDoer = basing.BaserDoer(baser=db)  # doer do reopens if not opened and closes
 
         kwa["salt"] = coring.Salter(raw=kwa["salt"].encode("utf-8")).qb64
-        hab = habbing.Habitat(name=name, ks=ks, db=db, temp=False, **kwa)
+        hab = habbing.Habitat(name=name, ks=ks, db=db, temp=False, estOnly=estOnly, **kwa)
         self.habDoer = habbing.HabitatDoer(habitat=hab)  # setup doer
         doers = [self.ksDoer, self.dbDoer, self.habDoer, doing.doify(self.inceptDo)]
 

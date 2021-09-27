@@ -96,7 +96,7 @@ class Habitat:
     """
 
     def __init__(self, *, name='test', ks=None, db=None,
-                 transferable=True, temp=False, erase=True, create=True,
+                 transferable=True, temp=False, erase=True, create=True, estOnly=False,
                  **kwa):
         """
         Initialize instance.
@@ -111,6 +111,7 @@ class Habitat:
                 and mode for key generation
             erase is Boolean True means erase private keys once stale
             create is Boolean True means create if identifier doesn't already exist
+            estOnly is Boolean True means identifier will be defined to allow only establishment events
 
         Parameters: Passed through via kwa to setup for later init
             seed (str): qb64 private-signing key (seed) for the aeid from which
@@ -145,6 +146,7 @@ class Habitat:
         self.temp = temp
         self.erase = erase
         self.create = create
+        self.estOnly = estOnly
         self.db = db if db is not None else basing.Baser(name=name,
                                                          temp=self.temp,
                                                          reopen=True)
@@ -278,6 +280,12 @@ class Habitat:
                                                             stem=self.name,
                                                             transferable=self.transferable,
                                                             temp=self.temp)
+                
+            if self.estOnly:
+                cnfg = [eventing.TraitDex.EstOnly]  # EstOnly
+            else:
+                cnfg = None
+                
 
             opre = verfers[0].qb64  # old pre default move below to new pre from incept
             if digers:
@@ -291,6 +299,7 @@ class Habitat:
                                           delpre=self.delpre,
                                           wits=wits,
                                           toad=toad,
+                                          cnfg=cnfg,
                                           nxt=coring.Nexter(digs=[diger.qb64 for diger in digers]).qb64)
                 # save off serder and verfers for delegation acceptance
                 self.delserder = serder
@@ -301,6 +310,7 @@ class Habitat:
                                          nxt=nxt,
                                          toad=toad,
                                          wits=wits,
+                                         cnfg=cnfg,
                                          code=code)
 
             self.pre = serder.ked["i"]  # new pre
