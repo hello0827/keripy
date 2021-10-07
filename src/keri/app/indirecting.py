@@ -12,7 +12,7 @@ from hio.core import http
 from hio.core.tcp import serving
 from hio.help import decking
 
-from . import habbing, keeping, directing, storing, httping
+from . import habbing, keeping, directing, storing, httping, configing
 from .. import help
 from ..app import obtaining
 from ..core import eventing, parsing
@@ -637,6 +637,8 @@ class GroupPoller(doing.DoDoer):
         Usage:
             add result of doify on this method to doers list
         """
+        cfg = configing.Configer(human=False)
+        print(cfg.get()["witness"][self.witness])
         loc = obtaining.getwitnessbyprefix(self.witness)
 
         client = http.clienting.Client(hostname=loc.ip4, port=loc.http)
