@@ -15,10 +15,12 @@ from keri.core import coring, eventing, parsing
 from keri.peer import exchanging
 
 
-def test_postman(mockGetWitnessByPrefixOneWitness):
+def test_postman():
     with habbing.openHab(name="test", transferable=True, temp=True) as hab, \
             habbing.openHab(name="wes", transferable=False, temp=True) as wesHab, \
             habbing.openHab(name="repTest", transferable=True, temp=True, wits=[wesHab.pre]) as recpHab:
+
+        hab.cf.put(dict(witnesses={wesHab.pre: dict(ip4="127.0.0.1", tcp=5634, http=5644)}))
 
         recpIcp = recpHab.makeOwnEvent(sn=0)
         wesKvy = eventing.Kevery(db=wesHab.db, lax=False, local=False)
@@ -121,12 +123,6 @@ def test_forward():
 
         ked = fwd.ked["a"]
         assert ked == serder.ked
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

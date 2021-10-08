@@ -10,7 +10,8 @@ from hio.base import doing
 from hio.core import http
 from hio.help import helping, Hict, decking
 
-from . import obtaining, forwarding, httping, agenting
+from . import forwarding, httping, configing
+from .obtaining import Location
 from .. import help
 from ..core import coring
 from ..core.coring import MtrDex
@@ -303,9 +304,10 @@ class Respondant(doing.DoDoer):
                     msg.extend(self.hab.sanction(exn))
                     self.mbx.storeMsg(topic=recipient, msg=msg)
                 else:
+                    import helping
                     wit = random.choice(kever.wits)
-                    loc = obtaining.getwitnessbyprefix(wit)
-
+                    cfg = configing.Configer(human=False)
+                    loc = helping.datify(Location, cfg.get().get("witnesses").get(wit))
                     client = http.clienting.Client(hostname=loc.ip4, port=loc.http)
                     clientDoer = http.clienting.ClientDoer(client=client)
 

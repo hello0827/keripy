@@ -12,15 +12,20 @@ from keri.db import dbing
 from keri.vdr import eventing, viring, issuing
 
 
-def test_withness_receiptor(mockGetWitnessByPrefix):
+def test_withness_receiptor():
     with habbing.openHab(name="wan", salt=b'wann-the-witness', transferable=False) as wanHab, \
             habbing.openHab(name="wil", salt=b'will-the-witness', transferable=False) as wilHab, \
             habbing.openHab(name="wes", salt=b'wess-the-witness', transferable=False) as wesHab, \
             habbing.openHab(name="pal", salt=b'0123456789abcdef', transferable=True,
                             wits=[wanHab.pre, wilHab.pre, wesHab.pre]) as palHab:
+
         wanDoers = indirecting.setupWitness(name="wan", hab=wanHab, temp=True, tcpPort=5632, httpPort=5642)
         wilDoers = indirecting.setupWitness(name="wil", hab=wilHab, temp=True, tcpPort=5633, httpPort=5643)
         wesDoers = indirecting.setupWitness(name="wes", hab=wesHab, temp=True, tcpPort=5634, httpPort=5644)
+
+        palHab.cf.put(dict(witnesses={wanHab.pre: dict(ip4="127.0.0.1", tcp=5632, http=5642),
+                                      wilHab.pre: dict(ip4="127.0.0.1", tcp=5633, http=5643),
+                                      wesHab.pre: dict(ip4="127.0.0.1", tcp=5634, http=5644)}))
 
         witDoer = agenting.WitnessReceiptor(hab=palHab, klas=agenting.TCPWitnesser)
 
@@ -42,15 +47,20 @@ def test_withness_receiptor(mockGetWitnessByPrefix):
         assert len(wigs) == 3
 
 
-def test_witness_sender(mockGetWitnessByPrefix):
+def test_witness_sender():
     with habbing.openHab(name="wan", salt=b'wann-the-witness', transferable=False) as wanHab, \
             habbing.openHab(name="wil", salt=b'will-the-witness', transferable=False) as wilHab, \
             habbing.openHab(name="wes", salt=b'wess-the-witness', transferable=False) as wesHab, \
             habbing.openHab(name="pal", salt=b'0123456789abcdef', transferable=True,
                             wits=[wanHab.pre, wilHab.pre, wesHab.pre]) as palHab:
+
         wanDoers = indirecting.setupWitness(name="wan", hab=wanHab, temp=True, tcpPort=5632, httpPort=5642)
         wilDoers = indirecting.setupWitness(name="wil", hab=wilHab, temp=True, tcpPort=5633, httpPort=5643)
         wesDoers = indirecting.setupWitness(name="wes", hab=wesHab, temp=True, tcpPort=5634, httpPort=5644)
+
+        palHab.cf.put(dict(witnesses={wanHab.pre: dict(ip4="127.0.0.1", tcp=5632, http=5642),
+                                      wilHab.pre: dict(ip4="127.0.0.1", tcp=5633, http=5643),
+                                      wesHab.pre: dict(ip4="127.0.0.1", tcp=5634, http=5644)}))
 
         serder = eventing.issue(vcdig="Ekb-iNmnXnOYIAlZ9vzK6RV9slYiKQSyQvAO-k0HMOI8",
                                 regk="EbA1o_bItVC9i6YB3hr2C3I_Gtqvz02vCmavJNoBA3Jg")
@@ -75,7 +85,7 @@ def test_witness_sender(mockGetWitnessByPrefix):
             # assert serder.pre == found.pre
 
 
-def test_witness_inquisitor(mockGetWitnessByPrefix):
+def test_witness_inquisitor():
     with habbing.openHab(name="wan", salt=b'wann-the-witness', transferable=False) as wanHab, \
             habbing.openHab(name="wil", salt=b'will-the-witness', transferable=False) as wilHab, \
             habbing.openHab(name="wes", salt=b'wess-the-witness', transferable=False) as wesHab, \
@@ -83,9 +93,18 @@ def test_witness_inquisitor(mockGetWitnessByPrefix):
                             wits=[wanHab.pre, wilHab.pre, wesHab.pre]) as palHab, \
             habbing.openHab(name="qin", salt=b'abcdef0123456789', transferable=True,
                             wits=[wanHab.pre, wilHab.pre, wesHab.pre]) as qinHab:
+
         wanDoers = indirecting.setupWitness(name="wan", hab=wanHab, temp=True, tcpPort=5632, httpPort=5642)
         wilDoers = indirecting.setupWitness(name="wil", hab=wilHab, temp=True, tcpPort=5633, httpPort=5643)
         wesDoers = indirecting.setupWitness(name="wes", hab=wesHab, temp=True, tcpPort=5634, httpPort=5644)
+
+        palHab.cf.put(dict(witnesses={wanHab.pre: dict(ip4="127.0.0.1", tcp=5632, http=5642),
+                                      wilHab.pre: dict(ip4="127.0.0.1", tcp=5633, http=5643),
+                                      wesHab.pre: dict(ip4="127.0.0.1", tcp=5634, http=5644)}))
+
+        qinHab.cf.put(dict(witnesses={wanHab.pre: dict(ip4="127.0.0.1", tcp=5632, http=5642),
+                                      wilHab.pre: dict(ip4="127.0.0.1", tcp=5633, http=5643),
+                                      wesHab.pre: dict(ip4="127.0.0.1", tcp=5634, http=5644)}))
 
         palWitDoer = agenting.WitnessReceiptor(hab=palHab, klas=agenting.TCPWitnesser)
         qinWitDoer = agenting.WitnessReceiptor(hab=qinHab, klas=agenting.TCPWitnesser)
@@ -124,7 +143,7 @@ def test_witness_inquisitor(mockGetWitnessByPrefix):
         assert qinHab.pre in palHab.kevers
 
 
-def test_witness_inquisitor_dedupe(mockGetWitnessByPrefix):
+def test_witness_inquisitor_dedupe():
     with habbing.openHab(name="pal", salt=b'0123456789abcdef', transferable=True,
                          wits=[]) as palHab, \
             habbing.openHab(name="qin", salt=b'abcdef0123456789', transferable=True,
@@ -158,3 +177,10 @@ def test_witness_inquisitor_dedupe(mockGetWitnessByPrefix):
                         b'qFuttSGZa_pLwC8G4X1qL7JA"}}-HABEGhub0DVJ1LdJ-n_rPxRqFuttSGZa_pLwC8G4X1qL7JA-'
                         b'AABAA98K_G_MASsS6rmTnQvNxeMhRTPgZg83NSJla1edSxN43RPXsZIxHdrMqRKx8-6BSjqyMNNS'
                         b'D1iBWywvyHCcmDw')
+
+
+if __name__ == "__main__":
+    test_witness_sender()
+    test_witness_inquisitor()
+    test_withness_receiptor()
+    test_witness_inquisitor_dedupe()

@@ -15,10 +15,10 @@ from hio.core.tcp import clienting
 from hio.help import decking
 from orderedset import OrderedSet as oset
 
-from . import httping, grouping, configing
+from . import httping, grouping
+from .obtaining import Location
 from .. import help
 from .. import kering
-from ..app import obtaining
 from ..core import eventing, parsing, scheming, coring
 from ..db import dbing
 from ..help import helping
@@ -308,9 +308,9 @@ class TCPWitnesser(doing.DoDoer):
         self.tock = tock
         _ = (yield self.tock)
 
-        cfg = configing.Configer(human=False)
-        print(cfg.get()["witness"][self.wit])
-        loc = obtaining.getwitnessbyprefix(self.wit)
+        print(self.hab.name)
+        print(self.wit)
+        loc = helping.datify(Location, self.hab.cf.get().get("witnesses").get(self.wit))
         client = clienting.Client(host=loc.ip4, port=loc.tcp)
         self.parser = parsing.Parser(ims=client.rxbs,
                                      framed=True,
@@ -383,9 +383,9 @@ class HttpWitnesser(doing.DoDoer):
                                       lax=False,
                                       local=True)
 
-        cfg = configing.Configer(human=False)
-        print(cfg.get()["witness"][self.wit])
-        loc = obtaining.getwitnessbyprefix(self.wit)
+        print(self.hab.name)
+        print(self.wit)
+        loc = helping.datify(Location, self.hab.cf.get().get("witnesses").get(self.wit))
 
         self.client = http.clienting.Client(hostname=loc.ip4, port=loc.http)
         clientDoer = http.clienting.ClientDoer(client=self.client)

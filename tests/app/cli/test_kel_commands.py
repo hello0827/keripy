@@ -11,7 +11,7 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_kel_commands():
-    for name in ["wan", "wil", "wes", "test"]:
+    for name in ["wan", "wil", "wes"]:
         if os.path.exists('/usr/local/var/keri/db/{}'.format(name)):
             shutil.rmtree('/usr/local/var/keri/db/{}'.format(name))
         if os.path.exists('/usr/local/var/keri/ks/{}'.format(name)):
@@ -38,7 +38,6 @@ def test_kel_commands():
         while not tymer.expired:
             doist.recur()
             time.sleep(doist.tock)
-        # doist.do(doers=doers)
 
         assert doist.limit == limit
 

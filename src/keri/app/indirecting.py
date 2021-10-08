@@ -12,11 +12,12 @@ from hio.core import http
 from hio.core.tcp import serving
 from hio.help import decking
 
-from . import habbing, keeping, directing, storing, httping, configing
+from . import habbing, keeping, directing, storing, httping
+from .obtaining import Location
 from .. import help
-from ..app import obtaining
 from ..core import eventing, parsing
 from ..db import basing
+from ..help import helping
 from ..peer import exchanging
 from ..vdr import verifying
 from ..vdr.eventing import Tevery
@@ -561,7 +562,8 @@ class Poller(doing.DoDoer):
         Usage:
             add result of doify on this method to doers list
         """
-        loc = obtaining.getwitnessbyprefix(self.witness)
+        print("FUCK FUCK FUCK")
+        loc = helping.datify(Location, self.hab.cf.get().get("witnesses").get(self.witness))
 
         client = http.clienting.Client(hostname=loc.ip4, port=loc.http)
         clientDoer = http.clienting.ClientDoer(client=client)
@@ -637,9 +639,8 @@ class GroupPoller(doing.DoDoer):
         Usage:
             add result of doify on this method to doers list
         """
-        cfg = configing.Configer(human=False)
-        print(cfg.get()["witness"][self.witness])
-        loc = obtaining.getwitnessbyprefix(self.witness)
+        print("DUCK DUCK DUCK")
+        loc = helping.datify(Location, self.hab.cf.get().get("witnesses").get(self.witness))
 
         client = http.clienting.Client(hostname=loc.ip4, port=loc.http)
         clientDoer = http.clienting.ClientDoer(client=client)

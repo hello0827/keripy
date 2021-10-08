@@ -65,7 +65,8 @@ class Postman(doing.DoDoer):
 
                 kever = self.hab.kevers[recp]
                 wit = random.choice(kever.wits)
-
+                print(wit)
+                print(self.hab.name)
                 witer = self.klas(hab=self.hab, wit=wit)
                 witer.msgs.append(bytearray(ims))  # make a copy
                 self.extend([witer])
