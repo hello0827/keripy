@@ -12,7 +12,7 @@ from keri.core.coring import Versify, Serials, Ilks, MtrDex, Prefixer, Serder, S
 from keri.db import basing
 from keri.db.dbing import snKey, dgKey
 from keri.kering import Version, EmptyMaterialError, DerivationError, MissingAnchorError, ValidationError, \
-    MissingWitnessSignatureError, LikelyDuplicitousError
+    MissingWitnessSignatureError, LikelyDuplicitousError, OutOfOrderError
 from keri.vdr import eventing, viring
 from keri.vdr.eventing import rotate, issue, revoke, backerIssue, backerRevoke, Tever, Tevery, VcStates
 from keri.vdr.viring import nsKey
@@ -749,6 +749,53 @@ def test_tevery_process_escrow():
         tev = tvy.tevers[regk]
         assert tev.prefixer.qb64 == vcp.pre
         assert tev.sn == 0
+
+
+
+def test_tevery_out_of_order_escrow():
+    with basing.openDB() as db, keeping.openKS() as kpr, viring.openReg() as reg:
+        hab = buildHab(db, kpr)
+
+        vcp = eventing.incept(hab.pre,
+                              baks=[],
+                              toad=0,
+                              cnfg=["NB"],
+                              code=MtrDex.Blake3_256)
+        regk = vcp.pre
+
+        # successfully anchor to a rotation event
+        rseal = keventing.SealEvent(i=regk, s=vcp.ked["s"], d=vcp.diger.qb64)
+
+        rseqner = Seqner(sn=1)
+        rdiger = coring.Diger(qb64b=b'E-yQ6BjCaJg-u2mNuE-ycVWVTq7IZ8TuN-Ew8soLijSA')
+        rrot = hab.rotate(data=[rseal._asdict()])  # Now rotate so the achoring KEL event gets into the database
+        rrotser = coring.Serder(raw=rrot)
+        assert rrotser.digb == rdiger.qb64b
+
+        tvy = Tevery(reger=reg, db=db)
+
+        vcdig = "E_AD6CQrsJbQzwj5wu6L7AF2b7BNCdME2wpAndWMEGW4"
+        iss = eventing.issue(vcdig=vcdig, regk=regk)
+        iseal = keventing.SealEvent(i=iss.pre, s=iss.ked["s"], d=iss.dig)
+        irot = hab.rotate(data=[iseal._asdict()])  # Now rotate so the achoring KEL event gets into the database
+        irotser = coring.Serder(raw=irot)
+        iseqner = coring.Seqner(sn=irotser.sn)
+
+        with pytest.raises(OutOfOrderError):  # Process before the Hab rotation event, will escrow
+            tvy.processEvent(serder=iss, seqner=iseqner, diger=irotser.diger)
+
+        assert regk not in tvy.tevers
+
+        tvy.processEvent(serder=vcp, seqner=rseqner, diger=rrotser.diger)
+        assert regk in tvy.tevers
+
+        tvy.processEscrows()  # process escrows and now the Tever event is good.
+        tev = tvy.tevers[regk]
+        assert tev.prefixer.qb64 == vcp.pre
+        assert tev.sn == 0
+
+        (state, _) = tev.vcState(vcpre=iss.pre)
+        assert state == VcStates.issued
 
 
 

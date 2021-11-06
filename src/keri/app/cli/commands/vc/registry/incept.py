@@ -72,11 +72,25 @@ class RegistryInceptor(doing.DoDoer):
         self.icpr.msgs.append(msg)
 
         regk = None
+        published = False
+        witnessed = False
+        finished = False
         while not regk:
             while self.icpr.cues:
                 cue = self.icpr.cues.popleft()
                 if cue["kin"] == "finished":
                     regk = cue["regk"]
+                    finished = True
+
+                elif cue["kin"] == "published":
+                    regk = cue["regk"]
+                    published = True
+
+                elif cue["kin"] == "witnessed":
+                    regk = cue["regk"]
+                    witnessed = True
+
+                if (published and witnessed) or finished:
                     break
                 yield self.tock
             yield self.tock

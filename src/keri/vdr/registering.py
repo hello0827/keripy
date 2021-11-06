@@ -80,7 +80,7 @@ class RegistryInceptDoer(doing.DoDoer):
                         _ = yield self.tock
 
                     self.remove([witSender])
-                    self.cues.append(dict(kin="finished", regk=self.issuer.regk))
+                    self.cues.append(dict(kin="published", regk=self.issuer.regk))
 
                 elif cueKin == "kevt":
                     kevt = cue["msg"]
@@ -91,6 +91,7 @@ class RegistryInceptDoer(doing.DoDoer):
                         yield self.tock
 
                     self.remove([witDoer])
+                    self.cues.append(dict(kin="witnessed", regk=self.issuer.regk))
 
                 elif cueKin == "multisig":
                     msg = dict(
