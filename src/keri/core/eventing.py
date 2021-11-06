@@ -2076,7 +2076,7 @@ class Kever:
 
             if len(windices) < toad:  # not fully witnessed yet
                 if self.escrowPWEvent(serder=serder, wigers=wigers, sigers=sigers, seqner=seqner, diger=diger):
-                    self.cues.append(dict(kin="query", q=dict(pre=serder.issuer, sn=seqner.sn)))
+                    self.cues.append(dict(kin="query", q=dict(pre=serder.pre, sn=serder.sn)))
                 raise MissingWitnessSignatureError("Failure satisfying toad = {} "
                                                    "on witness sigs for {} for evt = {}.".format(toad,
                                                                                                  [siger.qb64 for siger

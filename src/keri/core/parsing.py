@@ -814,9 +814,9 @@ class Parser:
                 if trqs:
                     kvy.processReceiptQuadruples(serder, trqs, firner=firner)
 
-            except AttributeError:
+            except AttributeError as e:
                 raise kering.ValidationError("No kevery to process so dropped msg"
-                                      "= {}.".format(serder.pretty))
+                                      "= {}.".format(serder.pretty()))
 
         elif ilk in [Ilks.rct]:  # event receipt msg (nontransferable)
             if not (cigars or wigers or tsgs):
@@ -932,7 +932,7 @@ class Parser:
             try:
                 tvy.processEvent(serder=serder, seqner=seqner, diger=diger, wigers=wigers)
 
-            except AttributeError:
+            except AttributeError as e:
                 raise kering.ValidationError("No tevery to process so dropped msg"
                                       "= {}.".format(serder.pretty()))
 

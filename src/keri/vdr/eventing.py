@@ -8,28 +8,26 @@ VC TEL  support
 
 import json
 import logging
-from collections import deque, namedtuple
-
-from hio.help import decking
-from math import ceil
+from collections import namedtuple
 
 import pysodium
+from hio.help import decking
 from keri import kering
-
 from keri.core import coring
+from math import ceil
 from orderedset import OrderedSet as oset
 
+from .. import core
+from .. import help
 from ..core.coring import (MtrDex, Serder, Serials, Versify, Prefixer,
                            Ilks, Seqner, Verfer)
 from ..core.eventing import SealEvent, ample, TraitDex, verifySigs, validateSN
-from .. import core
 from ..db import basing
 from ..db.dbing import dgKey, snKey
 from ..help import helping
 from ..kering import (MissingWitnessSignatureError, Version,
                       MissingAnchorError, ValidationError, OutOfOrderError, LikelyDuplicitousError)
 from ..vdr.viring import Registry, nsKey
-from .. import help
 
 logger = help.ogler.getLogger()
 
@@ -1184,6 +1182,26 @@ class Tever:
         logger.info("Tever state: Escrowed partially witnessed "
                     "event = %s\n", serder.ked)
 
+    def escrowALEvent(self, serder, seqner, diger, bigers=None, baks=None):
+        """
+        Update associated logs for escrow of anchorless event
+
+        Parameters:
+            serder is Serder instance of  event
+        """
+        key = dgKey(serder.preb, serder.digb)
+        if seqner and diger:
+            sealet = seqner.qb64b + diger.qb64b
+            self.reger.putAnc(key, sealet)
+        if bigers:
+            self.reger.putTibs(key, [biger.qb64b for biger in bigers])
+        if baks:
+            self.reger.delBaks(key)
+            self.reger.putBaks(key, [bak.encode("utf-8") for bak in baks])
+        self.reger.putTvt(key, serder.raw)
+        logger.info("Tever state: Escrowed anchorless event "
+                    "event = %s\n", serder.ked)
+        return self.reger.putTae(snKey(serder.preb, serder.sn), serder.digb)
 
     def getBackerState(self, ked):
         rega = ked["ra"]
@@ -1401,26 +1419,6 @@ class Tevery:
         logger.info("Tever state: Escrowed our of order TEL event "
                     "event = %s\n", serder.ked)
 
-    def escrowALEvent(self, serder, seqner, diger, bigers=None, baks=None):
-        """
-        Update associated logs for escrow of anchorless event
-
-        Parameters:
-            serder is Serder instance of  event
-        """
-        key = dgKey(serder.preb, serder.digb)
-        if seqner and diger:
-            sealet = seqner.qb64b + diger.qb64b
-            self.reger.putAnc(key, sealet)
-        if bigers:
-            self.reger.putTibs(key, [biger.qb64b for biger in bigers])
-        if baks:
-            self.reger.delBaks(key)
-            self.reger.putBaks(key, [bak.encode("utf-8") for bak in baks])
-        self.reger.putTvt(key, serder.raw)
-        logger.info("Tever state: Escrowed anchorless event "
-                    "event = %s\n", serder.ked)
-        return self.reger.putTae(snKey(serder.preb, serder.sn), serder.digb)
 
     def processEscrows(self):
         """
