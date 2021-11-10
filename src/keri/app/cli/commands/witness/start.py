@@ -35,7 +35,7 @@ parser.add_argument('-n', '--name',
 
 
 def launch(args):
-    help.ogler.level = logging.INFO
+    help.ogler.level = logging.CRITICAL
     help.ogler.reopen(name=args.name, temp=True, clear=True)
 
     logger = help.ogler.getLogger()

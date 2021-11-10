@@ -57,11 +57,9 @@ parser.add_argument("-p", "--path",
                     default=STATIC_DIR_PATH,
                     help="Location of the KIWI app bundle for this agent")
 
-# help.ogler.level = logging.INFO
-# logger = help.ogler.getLogger()
 
 def launch(args):
-    help.ogler.level = logging.INFO
+    help.ogler.level = logging.CRITICAL
     help.ogler.reopen(name="keri", temp=True, clear=True)
 
     print("\n******* Starting Agent for {} listening: http/{}, tcp/{} "
