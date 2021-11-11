@@ -75,7 +75,7 @@ class RegistryInceptor(doing.DoDoer):
         published = False
         witnessed = False
         finished = False
-        while not regk:
+        while not ((published and witnessed) or finished):
             while self.icpr.cues:
                 cue = self.icpr.cues.popleft()
                 if cue["kin"] == "finished":
@@ -90,8 +90,7 @@ class RegistryInceptor(doing.DoDoer):
                     regk = cue["regk"]
                     witnessed = True
 
-                if (published and witnessed) or finished:
-                    break
+
                 yield self.tock
             yield self.tock
 

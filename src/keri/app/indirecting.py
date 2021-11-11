@@ -14,10 +14,12 @@ from hio.help import decking
 from keri.app import agenting
 
 from . import habbing, keeping, directing, storing, httping
+from .httping import Diagnostician
 from .. import help
 from ..app import obtaining
 from ..core import eventing, parsing
 from ..db import basing
+from ..help import helping
 from ..peer import exchanging
 from ..vdr import verifying
 from ..vdr.eventing import Tevery
@@ -49,6 +51,7 @@ def setupWitness(name="witness", hab=None, mbx=None, temp=False, tcpPort=5631, h
     rep = storing.Respondant(hab=hab, mbx=mbx)
     httpHandler = HttpMessageHandler(hab=hab, app=app, rep=rep, verifier=verfer, mbx=mbx)
     mbxer = storing.MailboxServer(app=app, hab=hab, mbx=mbx)
+    Diagnostician(db=hab.db, reger=verfer.reger, app=app)
 
     server = http.Server(port=httpPort, app=app)
     httpServerDoer = http.ServerDoer(server=server)
@@ -838,12 +841,13 @@ class HttpMessageHandler(doing.DoDoer):
         """
 
         serder = eventing.Serder(ked=cr.payload, kind=eventing.Serials.json)
+
         msg = bytearray(serder.raw)
         msg.extend(cr.attachments.encode("utf-8"))
-
         self.rxbs.extend(msg)
 
         rep.status = falcon.HTTP_202  # This is the default status
+
 
     def msgDo(self, tymth=None, tock=0.0, **opts):
         """
@@ -916,5 +920,4 @@ class HttpMessageHandler(doing.DoDoer):
             self.kevery.processEscrows()
             if self.tvy is not None:
                 self.tvy.processEscrows()
-
-            yield
+            yield 0.75

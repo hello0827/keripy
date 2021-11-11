@@ -13,6 +13,7 @@ from keri import help
 from keri import kering
 from keri.core import coring
 from keri.core.coring import Ilks
+from keri.db import dbing
 from keri.end import ending
 from keri.help.helping import nowIso8601
 
@@ -22,6 +23,177 @@ CESR_CONTENT_TYPE = "application/cesr+json"
 CESR_ATTACHMENT_HEADER = "CESR-ATTACHMENT"
 CESR_DATE_HEADER = "CESR-DATE"
 CESR_RECIPIENT_HEADER = "CESR-RECIPIENT"
+
+
+class Diagnostician:
+    """
+    Diagnostic endpoints for a running agent or witness or watcher.  Provides escrow contents
+    for the key event log database as well as escrows for the verifiable credential and transaction
+    event log database.
+
+
+    """
+
+    def __init__(self, db, reger, app=None):
+        self.db = db
+        self.reger = reger
+
+        self.app = app if app is not None else falcon.App(cors_enable=True)
+
+        self.app.add_route("/escrows", self, suffix="escrows")
+
+
+    def on_get_escrows(self, req, rep):
+        """ Diagnostic endpoint to return the current state of database escrows
+
+        Parameters:
+              req (Request) Falcon HTTP request
+              rep (Response) Falcon HTTP response
+
+        """
+        if req.method == "OPTIONS":
+            rep.status = falcon.HTTP_200
+            return
+
+        pre = req.params["pre"] if "pre" in req.params else None
+        escrow = req.params["escrow"] if "escrow" in req.params else None
+
+        escrows = dict()
+
+        oots = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:
+            for ekey, edig in self.db.getOoeItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                oots.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["out-of-order"] = oots
+
+        uwes = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, ecouple in self.db.getUweItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow db key
+                uwes.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["unverified-witness-receipts"] = uwes
+
+        ures = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, etriplet in self.db.getUreItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                ures.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["unverified-nontrans-receipts"] = ures
+
+
+        vres = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, equinlet in self.db.getVreItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                vres.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["unverified-trans-receipts"] = vres
+
+        pwes = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, edig in self.db.getPweItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                pwes.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["partially-witnessed-events"] = pwes
+
+        pses = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, edig in self.db.getPseItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                pses.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["partially-signed-events"] = pses
+
+        ldes = list()
+        key = ekey = b''  # both start same. when not same means escrows found
+        while True:  # break when done
+            for ekey, edig in self.db.getLdeItemsNextIter(key=key):
+                pre, sn = dbing.splitKeySN(ekey)  # get pre and sn from escrow item
+                ldes.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+            if ekey == key:  # still same so no escrows found on last while iteration
+                break
+            key = ekey  # setup next while iteration, with key after ekey
+
+        escrows["likely-duplicitous-events"] = ldes
+
+
+        rtaes = list()
+        ctaes = list()
+        for (pre, snb, digb) in self.reger.getTaeItemIter():
+            sn = int(snb, 16)
+            dgkey = dbing.dgKey(pre, digb)
+            traw = self.reger.getTvt(dgkey)
+            if traw is None:
+                continue
+
+            tserder = coring.Serder(raw=bytes(traw))  # escrowed event
+            if tserder.ked["t"] in (Ilks.vcp, Ilks.vrt):
+                rtaes.append(dict(pre=pre.decode("utf-8"), sn=sn))
+            else:
+                ctaes.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+        escrows["anchorless-registry-events"] = rtaes
+        escrows["anchorless-credential-events"] = ctaes
+
+        roots = list()
+        coots = list()
+        for (pre, snb, digb) in self.reger.getOotItemIter():
+            sn = int(snb, 16)
+            dgkey = dbing.dgKey(pre, digb)
+            traw = self.reger.getTvt(dgkey)
+            if traw is None:
+                continue
+
+            tserder = coring.Serder(raw=bytes(traw))  # escrowed event
+            if tserder.ked["t"] in (Ilks.vcp, Ilks.vrt):
+                roots.append(dict(pre=pre.decode("utf-8"), sn=sn))
+            else:
+                coots.append(dict(pre=pre.decode("utf-8"), sn=sn))
+
+        escrows["out-of-order-registry-events"] = roots
+        escrows["out-of-order-credential-events"] = coots
+
+        rep.status = falcon.HTTP_200
+        rep.content_type = "application/json"
+        rep.data = json.dumps(escrows, indent=2).encode("utf-8")
+
+
 
 
 class SignatureValidationComponent(object):

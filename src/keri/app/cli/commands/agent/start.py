@@ -152,6 +152,7 @@ def adminInterface(controller, hab, insecure, proofs, cues, issuerCues, mbx, mbd
 
     kiwiServer = agenting.KiwiServer(hab=hab, controller=controller, verifier=verifier, gdoer=gdoer.msgs, app=app,
                                      rep=rep, issuerCues=issuerCues, insecure=insecure)
+    indirecting.Diagnostician(db=hab.db, reger=verifier.reger, app=app)
 
     mbxer = storing.MailboxServer(app=app, hab=hab, mbx=mbx)
 

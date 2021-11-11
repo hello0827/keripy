@@ -751,7 +751,7 @@ class KiwiServer(doing.DoDoer):
                 yield self.tock
 
             self.verifier.processEscrows()
-            yield self.tock
+            yield 0.75
 
 
     def issuerDo(self, tymth, tock=0.0, **opts):
