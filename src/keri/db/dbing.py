@@ -294,7 +294,7 @@ class LMDBer(filing.Filer):
         stat.S_IWUSR Owner has write permission.
         stat.S_IXUSR Owner has execute permission.
     """
-    HeadDirPath = "/usr/local/var"  # default in /usr/local/var
+
     TailDirPath = "keri/db"
     CleanTailDirPath = "keri/clean/db"
     AltHeadDirPath = "~"  # put in ~ as fallback when desired not permitted

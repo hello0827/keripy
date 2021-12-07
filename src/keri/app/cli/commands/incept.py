@@ -40,21 +40,27 @@ class InceptOptions:
 
 
 def handler(args):
-    try:
-        f = open(args.file)
-        config = json.load(f)
+    kwa = {}
+    if args.file:
+        try:
+            f = open(args.file)
+            config = json.load(f)
 
-        opts = InceptOptions(**config)
-    except FileNotFoundError:
-        print("config file", args.file, "not found")
-        sys.exit(-1)
-    except JSONDecodeError:
-        print("config file", args.file, "not valid JSON")
-        sys.exit(-1)
+            opts = InceptOptions(**config)
+            kwa = opts.__dict__
+        except FileNotFoundError:
+            print("config file", args.file, "not found")
+            sys.exit(-1)
+        except JSONDecodeError:
+            print("config file", args.file, "not valid JSON")
+            sys.exit(-1)
+    else:
+        kwa = args._asdict()
+        del kwa['name']
+        del kwa['proto']
+        del kwa['file']
 
     name = args.name
-
-    kwa = opts.__dict__
     icpDoer = InceptDoer(name=name, proto=args.proto, **kwa)
 
     doers = [icpDoer]
