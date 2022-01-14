@@ -10,6 +10,7 @@ class Location:
 
 witnesses = {
     "EZ921Tv_rdgIiHURHiWwyG8vW6R69QN2sCOYUDUvfCN0": Location(ip4="20.88.177.97", tcp=5921, http=5923),
+    "EZNNZO-Sa41t-ps_jwOeeDmo2x_nPNavwOEl1QbN7O7s": Location(ip4="127.0.0.1", tcp=5921, http=5923),
     "BHGK9Gem8PdiZ7PZ9WcIwxM7YnGaztYA65X3o5_RxFa8": Location(ip4="20.88.176.87", tcp=5632, http=5642),
     "B4tbPLI_TEze0pzAA-X-gewpdg22yfzN8CdKKIF5wETM": Location(ip4="20.88.176.198", tcp=5632, http=5642),
     "Boq71an-vhU6DtlZzzJF7yIqbQxb56rcxeB0LppxeDOA": Location(ip4="20.81.11.189", tcp=5632, http=5642),
