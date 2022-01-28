@@ -18,7 +18,7 @@ from keri.demo import demoing
 
 from keri import help  # logger support
 
-
+# William: Can refer to https://github.com/hello0827/keripy/blob/master/src/keri/demo/demo.md
 def test_direct_mode_bob_eve_demo():
     """
     Test direct mode bob and eve
